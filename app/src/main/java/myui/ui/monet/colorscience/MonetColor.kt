@@ -2,8 +2,6 @@ package myui.ui.monet.colorscience
 
 import myui.ui.monet.MathUtils
 import java.util.*
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -33,14 +31,14 @@ class MonetColor(val argb: Int) {
 
     companion object {
         var srgbToXyz = arrayOf(
-            doubleArrayOf(0.4124, 0.3576, 0.1805),
-            doubleArrayOf(0.2126, 0.7152, 0.0722),
-            doubleArrayOf(0.0193, 0.1192, 0.9505)
+            doubleArrayOf(0.4124574456426238, 0.3575758652297323, 0.1804372478276439),
+            doubleArrayOf(0.2126733704094779, 0.7151517304594646, 0.07217489913105756),
+            doubleArrayOf(0.01933394276449797, 0.1191919550765775, 0.9503028385589246)
         )
         var xyzToSrgb = arrayOf(
-            doubleArrayOf(3.2406, -1.5372, -0.4986),
-            doubleArrayOf(-0.9689, 1.8758, 0.0415),
-            doubleArrayOf(0.0557, -0.204, 1.057)
+            doubleArrayOf(3.240446254174338, -1.537134761595519, -0.4985301929498981),
+            doubleArrayOf(-0.9692666062874638, 1.876011959871178, 0.04155604221626438),
+            doubleArrayOf(0.05564350356396922, -0.2040261797345535, 1.057226567715413)
         )
 
         private fun getBlue(i: Int): Int {
@@ -87,21 +85,13 @@ class MonetColor(val argb: Int) {
 
         fun intFromXyz(dArr: DoubleArray): Int {
             val matrixMultiply: DoubleArray = MathUtils.matrixMultiply(
-                doubleArrayOf(
-                    dArr[0] / 100.0,
-                    dArr[1] / 100.0,
-                    dArr[2] / 100.0
-                ), xyzToSrgb
+                dArr.map { it / 100.0 }.toDoubleArray(),
+                xyzToSrgb
             )
-            val delinearized = delinearized(matrixMultiply[0])
-            val delinearized2 = delinearized(matrixMultiply[1])
-            val delinearized3 = delinearized(matrixMultiply[2])
             return intFromRgb(
-                intArrayOf(
-                    max(min(255.0, delinearized * 255.0), 0.0).roundToInt(),
-                    max(min(255.0, delinearized2 * 255.0), 0.0).roundToInt(),
-                    max(min(255.0, delinearized3 * 255.0), 0.0).roundToInt()
-                )
+                matrixMultiply.map {
+                    (delinearized(it) * 255.0).coerceIn(0.0..255.0).roundToInt()
+                }.toIntArray()
             )
         }
 
@@ -114,7 +104,7 @@ class MonetColor(val argb: Int) {
         }
 
         fun delinearized(d: Double): Double {
-            return if (d <= 0.0031308) d * 12.92 else d.pow(0.4166666666666667) * 1.055 - 0.055
+            return if (d <= 0.0031308) d * 12.92 else d.pow(1.0 / 2.4) * 1.055 - 0.055
         }
     }
 

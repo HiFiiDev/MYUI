@@ -30,7 +30,7 @@ class CAM16ViewingConditions @JvmOverloads constructor(
     var mZ = 0.0
 
     companion object {
-        val D65 = doubleArrayOf(95.047, 100.0, 108.883)
+        val D65 = doubleArrayOf(95.04705587, 100.0, 108.88287364)
         val DEFAULT = CAM16ViewingConditions()
     }
 
@@ -40,9 +40,9 @@ class CAM16ViewingConditions @JvmOverloads constructor(
     }
 
     fun unadapt(d: Double): Double {
-        val pow = 100.0 / mFL * 27.13.pow(2.380952380952381)
+        val pow = 100.0 / mFL * 27.13.pow(1.0 / 0.42)
         val abs = abs(d)
-        return sign(d) * pow * abs(abs / (400.0 - abs)).pow(2.380952380952381)
+        return sign(d) * pow * abs(abs / (400.0 - abs)).pow(1.0 / 0.42)
     }
 
     init {
@@ -73,7 +73,7 @@ class CAM16ViewingConditions @JvmOverloads constructor(
             mK = d10
             val pow = d10.pow(4.0)
             val d11 = 1.0 - pow
-            val pow2 = pow * d + 0.1 * d11 * d11 * (5.0 * d).pow(0.3333333333333333)
+            val pow2 = pow * d + 0.1 * d11 * d11 * (5.0 * d).pow(1.0 / 3.0)
             mFL = pow2
             mFLRoot = pow2.pow(0.25)
             val d12 = d2 / dArr[1]
@@ -85,11 +85,7 @@ class CAM16ViewingConditions @JvmOverloads constructor(
             d6 = if (z) {
                 1.0
             } else {
-                MathUtils.clamp(
-                    0.0,
-                    1.0,
-                    (1.0 - exp((-d - 42.0) / 92.0) * 0.2777777777777778) * d5
-                )
+                ((1.0 - exp((-d - 42.0) / 92.0) / 3.6) * d5).coerceIn(0.0..1.0)
             }
             val matrixMultiply: DoubleArray =
                 MathUtils.matrixMultiply(dArr, CAM16Color.XYZ_TO_LMS)

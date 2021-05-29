@@ -1,15 +1,8 @@
 package myui.ui.monet
 
-import kotlin.math.max
-import kotlin.math.min
-
 object MathUtils {
     fun lerp(d: Double, d2: Double, d3: Double): Double {
         return (1.0 - d3) * d + d3 * d2
-    }
-
-    fun clamp(d: Double, d2: Double, d3: Double): Double {
-        return min(max(d3, d), d2)
     }
 
     fun matrixMultiply(dArr: DoubleArray, dArr2: Array<DoubleArray>): DoubleArray {

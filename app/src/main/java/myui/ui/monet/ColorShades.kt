@@ -1,14 +1,12 @@
 package myui.ui.monet
 
-import android.annotation.SuppressLint
 import android.util.Log
 import myui.ui.monet.colorscience.CAM16Color
 import myui.ui.monet.colorscience.Contrast.lstarToY
 import myui.ui.monet.colorscience.MonetColor
 
 object ColorShades {
-    @SuppressLint("WrongConstant")
-    private val DEBUG: Boolean = Log.isLoggable("ColorShades", 3)
+    private val DEBUG: Boolean = true
     fun shadesOf(d: Double, d2: Double): IntArray {
         val iArr = IntArray(11)
         iArr[0] = getShade(95.0, d, d2).argb

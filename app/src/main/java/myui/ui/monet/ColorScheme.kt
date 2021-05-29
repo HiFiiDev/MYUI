@@ -57,7 +57,7 @@ class ColorScheme(i: Int, private val darkTheme: Boolean) {
         }
 
         operator fun invoke(i: Int): CharSequence {
-            return Intrinsics.stringPlus("#", Integer.toHexString(i))
+            return "#${i.toString(16)}"
         }
 
         override fun invoke(obj: Int?): CharSequence {

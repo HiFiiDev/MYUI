@@ -9,6 +9,6 @@ object Contrast {
 
     fun yToLstar(d: Double): Double {
         val d2 = d / 100.0
-        return if (d2 <= 0.008856451679035631) d2 * 903.2962962962963 else Math.cbrt(d2) * 116.0 - 16.0
+        return if (d2 <= 0.008856451679035631) d2 * 24389.0 / 27.0 else Math.cbrt(d2) * 116.0 - 16.0
     }
 }

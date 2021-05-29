@@ -21,8 +21,8 @@ class CAM16Color private constructor(
     companion object {
         private val DEBUG: Boolean = true
         private val LMS_TO_XYZ = arrayOf(
-            doubleArrayOf(1.862067855087233, -1.011254630531685, 0.1491867754444518),
-            doubleArrayOf(0.3875265432361372, 0.6214474419314753, -0.008973985167612518),
+            doubleArrayOf(1.862067855087233, -1.011254630531684, 0.1491867754444517),
+            doubleArrayOf(0.3875265432361371, 0.6214474419314753, -0.008973985167612517),
             doubleArrayOf(-0.01584149884933386, -0.03412293802851557, 1.04996443687785)
         )
         val XYZ_TO_LMS = arrayOf(
@@ -169,7 +169,7 @@ class CAM16Color private constructor(
             val radians = Math.toRadians(d3)
             val pow =
                 ((1.64 - 0.29.pow(cAM16ViewingConditions2.mBackgroundYToWhitepointY)).pow(-0.73) * d2).pow(
-                    1.1111111111111112
+                    1.0 / 0.9
                 )
             val pow2: Double = cAM16ViewingConditions2.mAw * d.pow(
                 2.0 / cAM16ViewingConditions2.mC / (sqrt(
@@ -177,7 +177,7 @@ class CAM16Color private constructor(
                 ) + 1.48)
             )
             val cos: Double =
-                cAM16ViewingConditions2.mNC * 3846.153846153846 * cAM16ViewingConditions2.mNcb * (cos(
+                cAM16ViewingConditions2.mNC * 50000.0 / 13.0 * cAM16ViewingConditions2.mNcb * (cos(
                     radians + 2.0
                 ) + 3.8) * 0.25
             val d4: Double = pow2 / cAM16ViewingConditions2.mNbb
@@ -188,9 +188,9 @@ class CAM16Color private constructor(
             val d7 = d5 * sin
             val d8 = d4 * 460.0
             val dArr = doubleArrayOf(
-                (451.0 * d6 + d8 + 288.0 * d7) * 7.127583749109052E-4,
-                (d8 - 891.0 * d6 - 261.0 * d7) * 7.127583749109052E-4,
-                (d8 - d6 * 220.0 - d7 * 6300.0) * 7.127583749109052E-4
+                (451.0 * d6 + d8 + 288.0 * d7) / 1403.0,
+                (d8 - 891.0 * d6 - 261.0 * d7) / 1403.0,
+                (d8 - d6 * 220.0 - d7 * 6300.0) / 1403.0
             )
             dArr[0] = cAM16ViewingConditions2.unadapt(dArr[0])
             dArr[1] = cAM16ViewingConditions2.unadapt(dArr[1])
@@ -213,7 +213,7 @@ class CAM16Color private constructor(
     constructor(monetColor: MonetColor) : this(monetColor, CAM16ViewingConditions.DEFAULT)
 
     override fun toString(): String {
-        return "CAM16Color{color=" + color.hex + ", J=" + J.toInt() + ", C=" + C.toInt() + ", h=" + h.toInt() + ", Q=" + Q.toInt() + ", M=" + M.toInt() + ", s=" + s.toInt() + '}'
+        return "CAM16Color{color=${color.hex}, J=${J.toInt()}, C=${C.toInt()}, h=${h.toInt()}, Q=${Q.toInt()}, M=${M.toInt()}, s=${s.toInt()}}"
     }
 
     init {
@@ -253,7 +253,7 @@ class CAM16Color private constructor(
         Q =
             4.0 / cAM16ViewingConditions2.mC * pow * (cAM16ViewingConditions2.mAw + 4.0) * cAM16ViewingConditions2.mFLRoot
         val pow2 =
-            (cAM16ViewingConditions2.mNC * 3846.153846153846 * cAM16ViewingConditions2.mNcb * ((cos(
+            (cAM16ViewingConditions2.mNC * 50000.0 / 13.0 * cAM16ViewingConditions2.mNcb * ((cos(
                 atan2 + 2.0
             ) + 3.8) * 0.25) * sqrt(
                 d4 * d4 + d6 * d6
