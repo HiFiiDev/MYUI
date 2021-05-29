@@ -55,14 +55,14 @@ class MainActivity : ComponentActivity() {
                     "ColorScheme ac",
                     colorScheme.allAccentColors.joinToString { MonetColor(it).hex.drop(1) }
                 )
-                val (n1, n2, a1, a2, a3) = listOf(
-                    colorScheme.allNeutralColors.subList(0, 11),
-                    colorScheme.allNeutralColors.subList(11, 22),
+                val (a1, a2, a3, n1, n2) = listOf(
                     colorScheme.allAccentColors.subList(0, 11),
                     colorScheme.allAccentColors.subList(11, 22),
-                    colorScheme.allAccentColors.subList(22, 33)
+                    colorScheme.allAccentColors.subList(22, 33),
+                    colorScheme.allNeutralColors.subList(0, 11),
+                    colorScheme.allNeutralColors.subList(11, 22)
                 )
-                val (rn1, rn2, ra1, ra2, ra3) = listOf(n1, n2, a1, a2, a3).map {
+                val (ra1, ra2, ra3, rn1, rn2) = listOf(a1, a2, a3, n1, n2).map {
                     Color("ff${MonetColor(it[4]).hex.drop(1)}".toLong(16))
                 }
 
@@ -107,26 +107,6 @@ class MainActivity : ComponentActivity() {
                             Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(16.dp)
                         ) {
-                            item { TextButton("N-1", rippleColor = rn1) }
-                            itemsIndexed(n1) { i, color ->
-                                TextButton(
-                                    (if (i == 1) 50 else i * 100).toString(),
-                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
-                                    rn1
-                                )
-                            }
-                            items(4) { Spacer(Modifier.height(48.dp)) }
-
-                            item { TextButton("N-2", rippleColor = rn2) }
-                            itemsIndexed(n2) { i, color ->
-                                TextButton(
-                                    (if (i == 1) 50 else i * 100).toString(),
-                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
-                                    rn2
-                                )
-                            }
-                            items(4) { Spacer(Modifier.height(48.dp)) }
-
                             item { TextButton("A-1", rippleColor = ra1) }
                             itemsIndexed(a1) { i, color ->
                                 TextButton(
@@ -153,6 +133,26 @@ class MainActivity : ComponentActivity() {
                                     (if (i == 1) 50 else i * 100).toString(),
                                     Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
                                     ra3
+                                )
+                            }
+                            items(4) { Spacer(Modifier.height(48.dp)) }
+
+                            item { TextButton("N-1", rippleColor = rn1) }
+                            itemsIndexed(n1) { i, color ->
+                                TextButton(
+                                    (if (i == 1) 50 else i * 100).toString(),
+                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
+                                    rn1
+                                )
+                            }
+                            items(4) { Spacer(Modifier.height(48.dp)) }
+
+                            item { TextButton("N-2", rippleColor = rn2) }
+                            itemsIndexed(n2) { i, color ->
+                                TextButton(
+                                    (if (i == 1) 50 else i * 100).toString(),
+                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
+                                    rn2
                                 )
                             }
                             items(4) { Spacer(Modifier.height(48.dp)) }
