@@ -108,12 +108,34 @@ class MainActivity : ComponentActivity() {
                                 )
                             )
                         }
+                        Spacer(Modifier.height(24.dp))
+                        Card(
+                            Modifier.padding(16.dp),
+                            shape = RoundedCornerShape(32.dp),
+                            backgroundColor = Color.White,
+                            elevation = 0.dp
+                        ) {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clickable { }
+                                    .padding(32.dp)
+                            ) {
+                                Text(
+                                    "Generate palette from photo",
+                                    Modifier.align(Alignment.Center),
+                                    color = Color.Black,
+                                    fontWeight = FontWeight.Medium,
+                                    style = MaterialTheme.typography.body1
+                                )
+                            }
+                        }
                         Spacer(Modifier.height(48.dp))
-                        Palette("A-1",a1, ra1)
-                        Palette("A-2",a2, ra2)
-                        Palette("A-3",a3, ra3)
-                        Palette("N-1",n1, rn1)
-                        Palette("N-2",n2, rn2)
+                        Palette("A-1", a1, ra1)
+                        Palette("A-2", a2, ra2)
+                        Palette("A-3", a3, ra3)
+                        Palette("N-1", n1, rn1)
+                        Palette("N-2", n2, rn2)
                     }
                 }
             }
@@ -136,7 +158,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-        Spacer(Modifier.height(48.dp))
+        Spacer(Modifier.height(32.dp))
     }
 
     @Composable
@@ -152,7 +174,7 @@ class MainActivity : ComponentActivity() {
         Box(
             Modifier
                 .padding(4.dp)
-                .size(94.dp)
+                .size(60.dp)
                 .clip(RoundedCornerShape(radius.value.roundToInt()))
                 .background(color)
                 .clickable { }
@@ -192,7 +214,8 @@ class MainActivity : ComponentActivity() {
                 text,
                 Modifier.align(Alignment.Center),
                 color = if (color.luminance() <= 0.5f) Color.White else Color.Black,
-                style = MaterialTheme.typography.h6
+                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.body1
             )
         }
     }
