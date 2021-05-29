@@ -1,35 +1,46 @@
 package myui.ui
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.scale
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import myui.ui.clustering.kmeans.Cluster
+import myui.ui.clustering.kmeans.KMeans
+import myui.ui.clustering.kmeans.Point
 import myui.ui.monet.ColorScheme
 import myui.ui.monet.colorscience.MonetColor
 import myui.ui.theme.MYUITheme
@@ -40,7 +51,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MYUITheme {
+                val url = "https://picsum.photos/300/300"
                 val systemUiController = rememberSystemUiController()
+
                 var themeColorText by remember { mutableStateOf(TextFieldValue("0000ff")) }
                 var themeColorText2 by remember { mutableStateOf("0000ff") }
                 LaunchedEffect(themeColorText.text) {
@@ -50,7 +63,16 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 val themeColor = Color("ff$themeColorText2".toLong(16))
-                val colorScheme = ColorScheme(themeColor.toArgb(), false)
+
+                var colorScheme by remember {
+                    mutableStateOf(ColorScheme(themeColor.toArgb(), false))
+                }
+                LaunchedEffect(themeColor) {
+                    withContext(Dispatchers.IO) {
+                        colorScheme = ColorScheme(themeColor.toArgb(), false)
+                    }
+                }
+
                 val (a1, a2, a3, n1, n2) = listOf(
                     colorScheme.allAccentColors.subList(0, 11),
                     colorScheme.allAccentColors.subList(11, 22),
@@ -61,9 +83,50 @@ class MainActivity : ComponentActivity() {
                 val (ra1, ra2, ra3, rn1, rn2) = listOf(a1, a2, a3, n1, n2).map {
                     Color("ff${MonetColor(it[4]).hex.drop(1)}".toLong(16))
                 }
+
                 val bgColor = Color("ff${MonetColor(n1[0]).hex.drop(1)}".toLong(16))
                 SideEffect {
                     systemUiController.setSystemBarsColor(bgColor)
+                }
+
+                var bitmap by remember {
+                    mutableStateOf(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888))
+                }
+                val colors = remember { mutableStateListOf<Point>() }
+                val clusters = remember { mutableStateListOf<Point>() }
+
+                LaunchedEffect(url) {
+                    withContext(Dispatchers.IO) {
+                        val loader = ImageLoader(this@MainActivity)
+                        val request = ImageRequest.Builder(this@MainActivity)
+                            .data(url)
+                            .allowHardware(false)
+                            .build()
+                        val result = (loader.execute(request) as SuccessResult).drawable
+                        bitmap = (result as BitmapDrawable).bitmap
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            val scaledBitmap = bitmap.scale(50, 50)
+                            for (i in 0 until scaledBitmap.width) {
+                                for (j in 0 until scaledBitmap.height) {
+                                    val color = scaledBitmap.getColor(i, j)
+                                    colors.add(
+                                        Point(
+                                            color.red().toDouble(),
+                                            color.green().toDouble(),
+                                            color.blue().toDouble()
+                                        )
+                                    )
+                                }
+                            }
+                            val kMeans = KMeans(colors, 6)
+                            val pointsClusters: List<Cluster>? = kMeans.pointsClusters
+                            for (i in 0 until kMeans.k) {
+                                with(pointsClusters!![i].centroid) {
+                                    clusters.add(Point(x, y, z))
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Surface(
@@ -115,19 +178,51 @@ class MainActivity : ComponentActivity() {
                             backgroundColor = Color.White,
                             elevation = 0.dp
                         ) {
-                            Box(
+                            Column(
                                 Modifier
                                     .fillMaxWidth()
                                     .clickable { }
-                                    .padding(32.dp)
+                                    .padding(16.dp)
                             ) {
-                                Text(
-                                    "Generate palette from photo",
-                                    Modifier.align(Alignment.Center),
-                                    color = Color.Black,
-                                    fontWeight = FontWeight.Medium,
-                                    style = MaterialTheme.typography.body1
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        bitmap.asImageBitmap(), null,
+                                        Modifier
+                                            .padding(horizontal = 16.dp)
+                                            .clip(RoundedCornerShape(16.dp))
+                                    )
+                                    Text(
+                                        "Generate palette from image",
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.Medium,
+                                        style = MaterialTheme.typography.body1
+                                    )
+                                }
+                                Spacer(Modifier.height(16.dp))
+                                FlowRow(
+                                    Modifier.fillMaxWidth(),
+                                    mainAxisAlignment = MainAxisAlignment.Center
+                                ) {
+                                    println(clusters.joinToString())
+                                    clusters.forEachIndexed { i, point ->
+                                        val color = with(point) {
+                                            Color(
+                                                (0xFF * x).toInt(),
+                                                (0xFF * y).toInt(),
+                                                (0xFF * z).toInt()
+                                            )
+                                        }
+                                        TextButton((i + 1).toString(), color) {
+                                            themeColorText = themeColorText.copy(
+                                                "ff${
+                                                    (0xFF * point.x).toLong().toString(16)
+                                                }${
+                                                    (0xFF * point.y).toLong().toString(16)
+                                                }${(0xFF * point.z).toLong().toString(16)}"
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                         Spacer(Modifier.height(48.dp))
@@ -165,7 +260,8 @@ class MainActivity : ComponentActivity() {
     fun TextButton(
         text: String,
         color: Color = Color.White,
-        rippleColor: Color = Color.Transparent
+        rippleColor: Color = Color.White,
+        onClick: () -> Unit = {}
     ) {
         val scope = rememberCoroutineScope()
         val radius = remember { Animatable(50f) }
@@ -173,11 +269,10 @@ class MainActivity : ComponentActivity() {
         val rippleAlpha = remember { Animatable(0f) }
         Box(
             Modifier
-                .padding(2.dp)
-                .size(64.dp)
+                .padding(4.dp)
+                .size(94.dp)
                 .clip(RoundedCornerShape(radius.value.roundToInt()))
                 .background(color)
-                .clickable { }
                 .pointerInput(Unit) {
                     detectTapGestures(onPress = {
                         scope.launch {
@@ -200,7 +295,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                    })
+                    }) { onClick() }
                 }
         ) {
             Surface(
