@@ -42,12 +42,14 @@ class MainActivity : ComponentActivity() {
             MYUITheme {
                 val systemUiController = rememberSystemUiController()
                 var themeColorText by remember { mutableStateOf(TextFieldValue("0000ff")) }
-                LaunchedEffect(themeColorText.text.length) {
-                    while (themeColorText.text.length < 6) {
-                        themeColorText = themeColorText.copy("f${themeColorText.text}")
+                var themeColorText2 by remember { mutableStateOf("0000ff") }
+                LaunchedEffect(themeColorText.text) {
+                    themeColorText2 = themeColorText.text
+                    while (themeColorText2.length < 6) {
+                        themeColorText2 = "f$themeColorText2"
                     }
                 }
-                val themeColor = Color("ff${themeColorText.text}".toLong(16))
+                val themeColor = Color("ff$themeColorText2".toLong(16))
                 val colorScheme = ColorScheme(themeColor.toArgb(), false)
                 val (a1, a2, a3, n1, n2) = listOf(
                     colorScheme.allAccentColors.subList(0, 11),
