@@ -71,10 +71,11 @@ class MainActivity : ComponentActivity() {
                     color = bgColor
                 ) {
                     Column(Modifier.verticalScroll(rememberScrollState())) {
+                        Spacer(Modifier.height(56.dp))
                         Text(
                             "Monet Color System",
                             Modifier.padding(24.dp, 48.dp),
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Medium,
                             style = MaterialTheme.typography.h4
                         )
                         Row(
