@@ -173,8 +173,8 @@ class MainActivity : ComponentActivity() {
         val rippleAlpha = remember { Animatable(0f) }
         Box(
             Modifier
-                .padding(4.dp)
-                .size(60.dp)
+                .padding(2.dp)
+                .size(64.dp)
                 .clip(RoundedCornerShape(radius.value.roundToInt()))
                 .background(color)
                 .clickable { }
