@@ -1,7 +1,6 @@
 package myui.ui.monet.colorscience
 
 import myui.ui.monet.MathUtils
-import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -26,7 +25,7 @@ class MonetColor(val argb: Int) {
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(arrayOf(Integer.valueOf(argb)))
+        return arrayOf(Integer.valueOf(argb)).hashCode()
     }
 
     companion object {
@@ -61,7 +60,7 @@ class MonetColor(val argb: Int) {
         }
 
         fun toHex(i: Int): String {
-            var hexString = Integer.toHexString(i)
+            var hexString = i.toString(16)
             while (hexString.length < 6) {
                 hexString = "0$hexString"
             }
