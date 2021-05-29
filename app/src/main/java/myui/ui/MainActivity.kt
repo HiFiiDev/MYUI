@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import myui.ui.monet.ColorScheme
 import myui.ui.monet.colorscience.MonetColor
@@ -201,12 +202,7 @@ class MainActivity : ComponentActivity() {
                                 rippleSize.animateTo(1f, spring(stiffness = 600f))
                                 scope.launch {
                                     ripple.animateTo(color, spring(stiffness = Spring.StiffnessLow))
-                                }
-                                scope.launch {
-                                    rippleSize.animateTo(
-                                        0f,
-                                        spring(stiffness = Spring.StiffnessLow)
-                                    )
+                                    rippleSize.snapTo(0f)
                                 }
                             }
                         }
