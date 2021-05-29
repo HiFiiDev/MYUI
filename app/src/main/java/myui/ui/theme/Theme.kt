@@ -16,8 +16,7 @@ private val DarkColorPalette = darkColors(
 private val LightColorPalette = lightColors(
     primary = Purple500,
     primaryVariant = Purple700,
-    secondary = Teal200,
-    background = Color(0xFFEDF1EC),
+    secondary = Teal200
 )
 
 @Composable
