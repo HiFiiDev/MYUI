@@ -108,65 +108,34 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         Spacer(Modifier.height(48.dp))
-                        FlowRow {
-                            TextButton("A-1", rippleColor = ra1)
-                            a1.forEachIndexed { i, color ->
-                                TextButton(
-                                    (if (i == 1) 50 else i * 100).toString(),
-                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
-                                    ra1
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(48.dp))
-                        FlowRow {
-                            TextButton("A-2", rippleColor = ra2)
-                            a2.forEachIndexed { i, color ->
-                                TextButton(
-                                    (if (i == 1) 50 else i * 100).toString(),
-                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
-                                    ra2
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(48.dp))
-                        FlowRow {
-                            TextButton("A-3", rippleColor = ra3)
-                            a3.forEachIndexed { i, color ->
-                                TextButton(
-                                    (if (i == 1) 50 else i * 100).toString(),
-                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
-                                    ra3
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(48.dp))
-                        FlowRow {
-                            TextButton("N-1", rippleColor = rn1)
-                            n1.forEachIndexed { i, color ->
-                                TextButton(
-                                    (if (i == 1) 50 else i * 100).toString(),
-                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
-                                    rn1
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(48.dp))
-                        FlowRow {
-                            TextButton("N-2", rippleColor = rn2)
-                            n2.forEachIndexed { i, color ->
-                                TextButton(
-                                    (if (i == 1) 50 else i * 100).toString(),
-                                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
-                                    rn2
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(48.dp))
+                        Palette("A-1",a1, ra1)
+                        Palette("A-2",a2, ra2)
+                        Palette("A-3",a3, ra3)
+                        Palette("N-1",n1, rn1)
+                        Palette("N-2",n2, rn2)
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    fun Palette(
+        name: String,
+        colors: List<Int>,
+        rippleColor: Color
+    ) {
+        FlowRow {
+            TextButton(name, rippleColor = rippleColor)
+            colors.forEachIndexed { i, color ->
+                TextButton(
+                    (if (i == 0) 50 else i * 100).toString(),
+                    Color("ff${MonetColor(color).hex.drop(1)}".toLong(16)),
+                    rippleColor
+                )
+            }
+        }
+        Spacer(Modifier.height(48.dp))
     }
 
     @Composable
